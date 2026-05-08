@@ -350,7 +350,7 @@ body {
   <!-- RSVP -->
   <div class="rsvp-section">
     <div class="rsvp-title">Merci de répondre simplement :</div>
-    <div class="rsvp-deadline">📅 Réponse souhaitée avant le <strong>13 juin 2026</strong></div>
+    <div class="rsvp-deadline">📅 Réponse souhaitée avant le <strong>16 juin 2026</strong></div>
     <div class="rsvp-sub">
       Votre réponse rapide, avec votre choix de menu,<br>
       permet au chef de préparer une soirée à la hauteur de l'événement.
@@ -379,8 +379,20 @@ body {
 </div>
 
 <script>
-// ── Nombre de personnes ──
-let nbPersonnes = 1;
+// ── Vidéo ──
+document.getElementById('playerWrap').addEventListener('click', function () {
+  var poster  = document.getElementById('poster');
+  var overlay = document.getElementById('playOverlay');
+  var embed   = document.getElementById('videoEmbed');
+  poster.style.display  = 'none';
+  overlay.style.display = 'none';
+  embed.src = 'https://www.youtube.com/embed/kwbjbYi41Zw?autoplay=1&rel=0';
+  embed.style.display = 'block';
+});
+
+// ── Nb personnes ──
+var nbPersonnes = 1;
+var reponseVient = null;
 
 function changerNb(delta) {
   nbPersonnes = Math.max(1, Math.min(10, nbPersonnes + delta));
@@ -389,42 +401,41 @@ function changerNb(delta) {
 }
 
 function renderMenus() {
-  const container = document.getElementById('menusPersonnes');
+  var container = document.getElementById('menusPersonnes');
   container.innerHTML = '';
-  for (let i = 1; i <= nbPersonnes; i++) {
-    const header = nbPersonnes > 1 ? `<div class="person-header">Personne ${i}</div>` : '';
-    container.innerHTML += `
-      ${header}
-      <div class="menu-row">
-        <div class="menu-col">
-          <div class="choice-cat">Plat principal</div>
-          <div class="choice-opts-row" data-groupe="plat-${i}">
-            <button class="choice-btn" onclick="selectMenu(this)">🥩 Filet de Bœuf</button>
-            <button class="choice-btn" onclick="selectMenu(this)">🐙 Duo de Poulpe</button>
-          </div>
-        </div>
-        <div class="menu-col">
-          <div class="choice-cat">Dessert</div>
-          <div class="choice-opts-row" data-groupe="dessert-${i}">
-            <button class="choice-btn" onclick="selectMenu(this)">🥭 Bavarois Mangue-Framboise</button>
-            <button class="choice-btn" onclick="selectMenu(this)">🍫 Moelleux Chocolat</button>
-          </div>
-        </div>
-      </div>`;
+  for (var i = 1; i <= nbPersonnes; i++) {
+    var header = nbPersonnes > 1 ? '<div class="person-header">Personne ' + i + '</div>' : '';
+    container.innerHTML += header +
+      '<div class="menu-row">' +
+        '<div class="menu-col">' +
+          '<div class="choice-cat">Plat principal</div>' +
+          '<div class="choice-opts-row" data-groupe="plat-' + i + '">' +
+            '<button class="choice-btn" onclick="selectMenu(this)">&#x1F969; Filet de B&#x153;uf</button>' +
+            '<button class="choice-btn" onclick="selectMenu(this)">&#x1F419; Duo de Poulpe</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="menu-col">' +
+          '<div class="choice-cat">Dessert</div>' +
+          '<div class="choice-opts-row" data-groupe="dessert-' + i + '">' +
+            '<button class="choice-btn" onclick="selectMenu(this)">&#x1F96D; Bavarois Mangue-Framboise</button>' +
+            '<button class="choice-btn" onclick="selectMenu(this)">&#x1F36B; Moelleux Chocolat</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
   }
 }
 
 function selectMenu(btn) {
-  const groupe = btn.closest('.choice-opts-row') || btn.closest('.choice-opts');
-  groupe.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+  var groupe = btn.closest('.choice-opts-row') || btn.closest('.choice-opts');
+  groupe.querySelectorAll('.choice-btn').forEach(function(b) { b.classList.remove('selected'); });
   btn.classList.add('selected');
 }
 
 function getChoix() {
-  const menus = [];
-  for (let i = 1; i <= nbPersonnes; i++) {
-    const plat    = document.querySelector(`[data-groupe="plat-${i}"] .choice-btn.selected`);
-    const dessert = document.querySelector(`[data-groupe="dessert-${i}"] .choice-btn.selected`);
+  var menus = [];
+  for (var i = 1; i <= nbPersonnes; i++) {
+    var plat    = document.querySelector('[data-groupe="plat-'    + i + '"] .choice-btn.selected');
+    var dessert = document.querySelector('[data-groupe="dessert-' + i + '"] .choice-btn.selected');
     menus.push({
       plat:    plat    ? plat.textContent.trim()    : null,
       dessert: dessert ? dessert.textContent.trim() : null
@@ -435,48 +446,68 @@ function getChoix() {
 
 function checkChoix(vient) {
   if (!vient) return true;
-  const menus = getChoix();
-  for (let i = 0; i < menus.length; i++) {
+  var menus = getChoix();
+  for (var i = 0; i < menus.length; i++) {
     if (!menus[i].plat || !menus[i].dessert) {
-      alert(`Merci de choisir le plat ET le dessert pour la personne ${i + 1}.`);
+      alert('Merci de choisir le plat ET le dessert pour la personne ' + (i + 1) + '.');
       return false;
     }
   }
   return true;
 }
 
-// Initialisation au chargement
-document.addEventListener('DOMContentLoaded', renderMenus);
-
+// ── OUI / NON : mémorise le choix et feedback visuel ──
 function repondre(vient) {
   if (!checkChoix(vient)) return;
-  document.querySelector('.rsvp-channels').scrollIntoView({behavior:'smooth'});
+  reponseVient = vient;
+  document.querySelectorAll('.rsvp-btns .btn').forEach(function(b) {
+    b.style.opacity = '0.45';
+    b.style.borderColor = 'rgba(255,190,50,.3)';
+  });
+  event.target.style.opacity = '1';
+  event.target.style.borderColor = 'rgba(255,210,80,1)';
+  document.querySelector('.rsvp-channels').scrollIntoView({behavior: 'smooth'});
 }
 
+// ── Email Gmail direct ──
 function envoyerEmail() {
-  const vient = confirm('Confirmez-vous votre présence ?');
-  if (!checkChoix(vient)) return;
-  const dest  = 'communicationrotaryploubalay@gmail.com';
-  const sujet = encodeURIComponent('RSVP – Passation de Pouvoir 24 juin 2026');
-  const corps = encodeURIComponent(vient
-    ? 'Bonjour Jean-Louis,\n\nJe serai présent(e) le 24 juin 2026.\n\nMon menu :\n- Plat : ' + c.plat + '\n- Dessert : ' + c.dessert + '\n\nAmitiés rotariennes,'
-    : 'Bonjour Jean-Louis,\n\nJe suis désolé(e), je ne pourrai pas être présent(e) le 24 juin.\n\nAmitiés rotariennes,');
-  window.location.href = 'mailto:' + dest + '?subject=' + sujet + '&body=' + corps;
+  if (reponseVient === null) {
+    alert('Merci de cliquer sur "OUI je viens" ou "Je ne peux pas" avant de valider.');
+    return;
+  }
+  if (!checkChoix(reponseVient)) return;
+  var menus = getChoix();
+  var menuLines = menus.map(function(m, i) {
+    return menus.length > 1
+      ? 'Personne ' + (i+1) + ' : ' + m.plat + ' / ' + m.dessert
+      : 'Plat : ' + m.plat + ' / Dessert : ' + m.dessert;
+  }).join('%0A');
+  var dest  = 'communicationrotaryploubalay@gmail.com';
+  var sujet = encodeURIComponent('RSVP - Passation de Pouvoir 24 juin 2026');
+  var body  = reponseVient
+    ? encodeURIComponent('Bonjour,\n\nJe serai present(e) le 24 juin 2026 (' + nbPersonnes + ' personne' + (nbPersonnes > 1 ? 's' : '') + ').\n\nMenus :\n') + menuLines + encodeURIComponent('\n\nAmities rotariennes,')
+    : encodeURIComponent('Bonjour,\n\nJe suis desole(e), je ne pourrai pas etre present(e) le 24 juin.\n\nAmities rotariennes,');
+  window.open('https://mail.google.com/mail/?view=cm&fs=1&to=' + dest + '&su=' + sujet + '&body=' + body, '_blank');
 }
 
+// ── WhatsApp direct ──
 function envoyerWhatsApp() {
-  const vient = confirm('Confirmez-vous votre présence ?');
-  if (!checkChoix(vient)) return;
-  const menus2 = getChoix();
-  const num = '33659091021';
-  const menuWa = menus2.map((m, i) =>
-    menus2.length > 1 ? `P${i+1}: ${m.plat} / ${m.dessert}` : `${m.plat} / ${m.dessert}`
-  ).join(' | ');
-  const msg = vient
-    ? `Bonjour Jean-Louis, je serai présent(e) le 24 juin (${nbPersonnes} pers.). Menus : ${menuWa}`
-    : 'Bonjour Jean-Louis, je ne pourrai pas être présent(e) le 24 juin. Désolé(e) !';
-  window.open('https://wa.me/' + num + '?text=' + encodeURIComponent(msg), '_blank');
+  if (reponseVient === null) {
+    alert('Merci de cliquer sur "OUI je viens" ou "Je ne peux pas" avant de valider.');
+    return;
+  }
+  if (!checkChoix(reponseVient)) return;
+  var menus = getChoix();
+  var menuWa = menus.map(function(m, i) {
+    return menus.length > 1 ? 'P' + (i+1) + ': ' + m.plat + ' / ' + m.dessert : m.plat + ' / ' + m.dessert;
+  }).join(' | ');
+  var msg = reponseVient
+    ? 'Bonjour, je serai present(e) le 24 juin (' + nbPersonnes + ' pers.). Menus : ' + menuWa
+    : 'Bonjour, je suis desole(e), je ne pourrai pas etre present(e) le 24 juin.';
+  window.open('https://wa.me/33659091021?text=' + encodeURIComponent(msg), '_blank');
 }
+
+document.addEventListener('DOMContentLoaded', renderMenus);
 </script>
 
 </body>
