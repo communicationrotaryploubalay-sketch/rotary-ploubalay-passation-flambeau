@@ -326,6 +326,7 @@ function changerNb(delta) {
 
 function renderMenus() {
   var container = document.getElementById('menusPersonnes');
+  if (!container) return;
   container.innerHTML = '';
   for (var i = 1; i <= nbPersonnes; i++) {
     var wrap = document.createElement('div');
@@ -335,15 +336,15 @@ function renderMenus() {
         '<div class="menu-col">' +
           '<div class="choice-cat">Plat principal</div>' +
           '<div class="choice-opts-row" data-groupe="plat-' + i + '">' +
-            '<button class="choice-btn" onclick="selectMenu(this)">&#127961; Filet de B&#339;uf</button>' +
-            '<button class="choice-btn" onclick="selectMenu(this)">&#128057; Duo de Poulpe</button>' +
+            '<button class="choice-btn" onclick="selectMenu(this)">Filet de Boeuf</button>' +
+            '<button class="choice-btn" onclick="selectMenu(this)">Duo de Poulpe</button>' +
           '</div>' +
         '</div>' +
         '<div class="menu-col">' +
           '<div class="choice-cat">Dessert</div>' +
           '<div class="choice-opts-row" data-groupe="dessert-' + i + '">' +
-            '<button class="choice-btn" onclick="selectMenu(this)">&#127853; Bavarois Mangue-Framboise</button>' +
-            '<button class="choice-btn" onclick="selectMenu(this)">&#127851; Moelleux Chocolat</button>' +
+            '<button class="choice-btn" onclick="selectMenu(this)">Bavarois Mangue-Framboise</button>' +
+            '<button class="choice-btn" onclick="selectMenu(this)">Moelleux Chocolat</button>' +
           '</div>' +
         '</div>' +
       '</div>';
@@ -362,10 +363,7 @@ function getChoix() {
   for (var i = 1; i <= nbPersonnes; i++) {
     var plat    = document.querySelector('[data-groupe="plat-'    + i + '"] .choice-btn.selected');
     var dessert = document.querySelector('[data-groupe="dessert-' + i + '"] .choice-btn.selected');
-    menus.push({
-      plat:    plat    ? plat.textContent.trim()    : null,
-      dessert: dessert ? dessert.textContent.trim() : null
-    });
+    menus.push({ plat: plat ? plat.textContent.trim() : null, dessert: dessert ? dessert.textContent.trim() : null });
   }
   return menus;
 }
@@ -375,7 +373,7 @@ function checkChoix(vient) {
   var menus = getChoix();
   for (var i = 0; i < menus.length; i++) {
     if (!menus[i].plat || !menus[i].dessert) {
-      alert('Merci de choisir le plat ET le dessert pour la personne ' + (i + 1) + '.');
+      alert("Merci de choisir le plat ET le dessert pour la personne " + (i + 1) + ".");
       return false;
     }
   }
@@ -393,57 +391,42 @@ function repondre(vient, evt) {
     evt.target.style.opacity = '1';
     evt.target.style.borderColor = 'rgba(255,210,80,1)';
   }
-  document.querySelector('.rsvp-channels').scrollIntoView({behavior: 'smooth'});
+  document.querySelector('.rsvp-channels').scrollIntoView({ behavior: 'smooth' });
 }
 
 function envoyerEmail() {
-  if (reponseVient === null) {
-    alert('Cliquez d'abord sur "OUI je viens" ou "Je ne peux pas".');
-    return;
-  }
+  if (reponseVient === null) { alert("Cliquez d'abord sur OUI ou Je ne peux pas."); return; }
   if (!checkChoix(reponseVient)) return;
-  var menus = getChoix();
-  var lignes = menus.map(function(m, i) {
-    return menus.length > 1
-      ? 'Personne ' + (i+1) + ' : ' + m.plat + ' / ' + m.dessert
-      : 'Plat : ' + m.plat + ' / Dessert : ' + m.dessert;
-  }).join('%0A');
-  var dest  = 'communicationrotaryploubalay@gmail.com';
-  var sujet = encodeURIComponent('RSVP - Passation de Pouvoir 24 juin 2026');
-  var corps = reponseVient
-    ? encodeURIComponent('Bonjour,
-
-Je serai present(e) le 24 juin 2026 (' + nbPersonnes + ' personne' + (nbPersonnes > 1 ? 's' : '') + ').
-
-Menus :
-') + lignes + encodeURIComponent('
-
-Amities rotariennes,')
-    : encodeURIComponent('Bonjour,
-
-Je ne pourrai pas etre present(e) le 24 juin.
-
-Amities rotariennes,');
-  window.open('https://mail.google.com/mail/?view=cm&fs=1&to=' + dest + '&su=' + sujet + '&body=' + corps, '_blank');
+  var menus   = getChoix();
+  var lignes  = menus.map(function(m, i) {
+    return menus.length > 1 ? "Personne " + (i+1) + " : " + m.plat + " / " + m.dessert : "Plat : " + m.plat + " / Dessert : " + m.dessert;
+  }).join("%0A");
+  var dest  = "communicationrotaryploubalay@gmail.com";
+  var sujet = encodeURIComponent("RSVP - Passation de Pouvoir 24 juin 2026");
+  var intro = reponseVient
+    ? encodeURIComponent("Bonjour,%0A%0AJe serai present(e) le 24 juin 2026 (" + nbPersonnes + " personne" + (nbPersonnes > 1 ? "s" : "") + ").%0A%0AMenus :%0A") + lignes + encodeURIComponent("%0A%0AAmities rotariennes,")
+    : encodeURIComponent("Bonjour,%0A%0AJe ne pourrai pas etre present(e) le 24 juin.%0A%0AAmities rotariennes,");
+  window.open("https://mail.google.com/mail/?view=cm&fs=1&to=" + dest + "&su=" + sujet + "&body=" + intro, "_blank");
 }
 
 function envoyerWhatsApp() {
-  if (reponseVient === null) {
-    alert('Cliquez d'abord sur "OUI je viens" ou "Je ne peux pas".');
-    return;
-  }
+  if (reponseVient === null) { alert("Cliquez d'abord sur OUI ou Je ne peux pas."); return; }
   if (!checkChoix(reponseVient)) return;
-  var menus = getChoix();
+  var menus  = getChoix();
   var menuWa = menus.map(function(m, i) {
-    return menus.length > 1 ? 'P' + (i+1) + ': ' + m.plat + ' / ' + m.dessert : m.plat + ' / ' + m.dessert;
-  }).join(' | ');
+    return menus.length > 1 ? "P" + (i+1) + ": " + m.plat + " / " + m.dessert : m.plat + " / " + m.dessert;
+  }).join(" | ");
   var msg = reponseVient
-    ? 'Bonjour, je serai present(e) le 24 juin (' + nbPersonnes + ' pers.). Menus : ' + menuWa
-    : 'Bonjour, je ne pourrai pas etre present(e) le 24 juin.';
-  window.open('https://wa.me/33659091021?text=' + encodeURIComponent(msg), '_blank');
+    ? "Bonjour, je serai present(e) le 24 juin (" + nbPersonnes + " pers.). Menus : " + menuWa
+    : "Bonjour, je ne pourrai pas etre present(e) le 24 juin.";
+  window.open("https://wa.me/33659091021?text=" + encodeURIComponent(msg), "_blank");
 }
 
-document.addEventListener('DOMContentLoaded', renderMenus);
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', renderMenus);
+} else {
+  renderMenus();
+}
 </script>
 
 </body>
