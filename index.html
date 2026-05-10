@@ -303,8 +303,8 @@ function envoyerWA(evt) {
   if (!checkChoix(reponseVient)) return;
   var m = buildMessage();
   var msg = reponseVient
-    ? "Bonjour Jean-Louis, je serai present(e) le 24 juin (" + m.nb + " pers.). Menus : " + m.menus
-    : "Bonjour Jean-Louis, je ne pourrai pas etre present(e) le 24 juin.";
+    ? "RSVP Passation de Pouvoir 24 juin\nNom : (merci de compléter)\nPresence : Oui\nNombre : " + m.nb + " pers.\nMenus : " + m.menus
+    : "RSVP Passation de Pouvoir 24 juin\nNom : (merci de compléter)\nPresence : Non";
   window.open("https://wa.me/33659091021?text=" + encodeURIComponent(msg), "_blank");
 }
 
