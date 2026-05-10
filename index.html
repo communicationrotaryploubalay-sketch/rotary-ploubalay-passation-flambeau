@@ -54,6 +54,26 @@ body { font-family:"EB Garamond",Georgia,serif; font-size:20px; background:#001e
 .choice-btn:hover { background:rgba(255,190,50,.15); border-color:rgba(255,190,50,.8); }
 .choice-btn.selected { background:rgba(255,190,50,.22); border-color:rgba(255,210,80,1); color:rgba(255,220,100,1); }
 
+/* CHAMP NOM */
+.nom-wrap {
+  margin-bottom:20px;
+}
+.nom-label {
+  font-size:1rem; color:rgba(255,215,100,.85);
+  margin-bottom:8px; display:block; text-align:left;
+  letter-spacing:.04em;
+}
+.nom-input {
+  width:100%; padding:12px 16px;
+  border:1px solid rgba(255,190,50,.5);
+  border-radius:3px; background:rgba(255,255,255,.07);
+  font-family:"EB Garamond",serif; font-size:1.1rem;
+  color:#fff; letter-spacing:.04em;
+  outline:none; transition:all .25s;
+}
+.nom-input::placeholder { color:rgba(255,255,255,.35); }
+.nom-input:focus { border-color:rgba(255,210,80,.9); background:rgba(255,255,255,.1); }
+
 /* RSVP */
 .rsvp-section { margin:26px 0; border:1px solid rgba(255,190,50,.22); border-radius:4px; background:rgba(255,190,50,.07); padding:22px; }
 .rsvp-title { font-size:1.25rem; font-weight:500; margin-bottom:6px; }
@@ -171,6 +191,10 @@ body { font-family:"EB Garamond",Georgia,serif; font-size:20px; background:#001e
     <div class="rsvp-deadline">📅 Réponse souhaitée avant le <strong>13 juin 2026</strong></div>
     <div class="rsvp-sub">Votre réponse rapide, avec votre choix de menu,<br>permet au chef de préparer une soirée à la hauteur de l'événement.</div>
 
+    <div class="nom-wrap">
+      <label class="nom-label">Votre nom et prénom :</label>
+      <input class="nom-input" id="nomInvite" type="text" placeholder="ex : Marie Dupont" />
+    </div>
     <div class="rsvp-btns">
       <button class="btn btn-yes" onclick="repondre(true, event)">✓ &nbsp;OUI, je viens</button>
       <button class="btn" onclick="repondre(false, event)">✗ &nbsp;Je ne peux pas</button>
@@ -261,6 +285,8 @@ function checkChoix(vient) {
 }
 
 function repondre(vient, evt) {
+  var nom = document.getElementById('nomInvite') ? document.getElementById('nomInvite').value.trim() : "";
+  if (!nom) { alert("Merci d'indiquer votre nom avant de continuer."); document.getElementById('nomInvite').focus(); return; }
   if (!checkChoix(vient)) return;
   reponseVient = vient;
   document.querySelectorAll('.rsvp-btns .btn').forEach(function(b) {
@@ -277,7 +303,9 @@ function buildMessage() {
   var lignes = menus.map(function(m, i) {
     return menus.length > 1 ? "Personne " + (i+1) + " : " + m.plat + " / " + m.dessert : m.plat + " / " + m.dessert;
   }).join(", ");
+  var nomSaisi = document.getElementById('nomInvite') ? document.getElementById('nomInvite').value.trim() : "";
   return {
+    nom: nomSaisi || "(nom non renseigne)",
     presence: reponseVient ? "Oui, je serai present(e)" : "Non, je ne pourrai pas etre present(e)",
     menus: lignes,
     nb: nbPersonnes
@@ -303,8 +331,8 @@ function envoyerWA(evt) {
   if (!checkChoix(reponseVient)) return;
   var m = buildMessage();
   var msg = reponseVient
-    ? "RSVP Passation de Pouvoir 24 juin\nNom : (merci de compléter)\nPresence : Oui\nNombre : " + m.nb + " pers.\nMenus : " + m.menus
-    : "RSVP Passation de Pouvoir 24 juin\nNom : (merci de compléter)\nPresence : Non";
+    ? "RSVP Passation de Pouvoir 24 juin\nNom : " + m.nom + "\nPresence : Oui\nNombre : " + m.nb + " pers.\nMenus : " + m.menus
+    : "RSVP Passation de Pouvoir 24 juin\nNom : " + m.nom + "\nPresence : Non";
   window.open("https://wa.me/33659091021?text=" + encodeURIComponent(msg), "_blank");
 }
 
