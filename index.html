@@ -170,14 +170,14 @@ body {
 .btn:hover { background:rgba(255,190,50,.15); border-color:rgba(255,190,50,.8); }
 .btn-yes { background:rgba(255,190,50,.13); border-color:rgba(255,190,50,.6); }
 .valider-label {
-  font-size:1.25rem; font-weight:500; color:rgba(255,215,100,1);
-  margin-bottom:14px; letter-spacing:.02em;
+  font-size:1rem; color:rgba(255,215,100,.85);
+  font-style:italic; margin-bottom:12px;
 }
 .rsvp-channels { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
 .chan-btn {
-  padding:14px 28px; border-radius:3px;
-  font-family:"EB Garamond",serif; font-size:1.2rem;
-  cursor:pointer; border:1px solid; transition:all .25s; font-weight:500;
+  padding:10px 22px; border-radius:3px;
+  font-family:"EB Garamond",serif; font-size:1rem;
+  cursor:pointer; border:1px solid; transition:all .25s;
 }
 .chan-mail {
   border-color:rgba(100,160,255,.5); background:rgba(100,160,255,.1); color:rgba(180,210,255,1);
@@ -288,7 +288,7 @@ body {
   <!-- RSVP -->
   <div class="rsvp-section">
     <div class="rsvp-title">Merci de répondre simplement :</div>
-    <div class="rsvp-deadline">📅 Réponse souhaitée avant le <strong>13 juin 2026</strong></div>
+    <div class="rsvp-deadline">📅 Réponse souhaitée avant le <strong>13 mai 2026</strong></div>
     <div class="rsvp-sub">
       Votre réponse rapide, avec votre choix de menu,<br>
       permet au chef de préparer une soirée à la hauteur de l'événement.
@@ -297,10 +297,10 @@ body {
       <button class="btn btn-yes" onclick="repondre(true, event)">✓ &nbsp;OUI, je viens</button>
       <button class="btn" onclick="repondre(false, event)">✗ &nbsp;Je ne peux pas</button>
     </div>
-    <div class="valider-label" style="margin-top:22px;">👇 Validez votre réponse par Email ou WhatsApp :</div>
+    <div class="valider-label">Validez votre réponse par :</div>
     <div class="rsvp-channels">
-      <button class="chan-btn chan-mail" onclick="envoyerEmail()">✉️ Valider par Email</button>
-      <button class="chan-btn chan-wa"   onclick="envoyerWhatsApp()">💬 Valider par WhatsApp</button>
+      <button class="chan-btn chan-mail" onclick="envoyerEmail()">✉️ Email</button>
+      <button class="chan-btn chan-wa"   onclick="envoyerWhatsApp()">💬 WhatsApp</button>
     </div>
   </div>
 
